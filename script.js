@@ -1,16 +1,7 @@
-// const width = 1603;
-// const height = 540;
 const paddingLeft = 144;
 const paddingRight = 30;
 const paddingTop = 40;
 const paddingBottom = 128;
-// const xOffset = 0;
-const mapWidth = 1315;
-const mapHeight = 396;
-
-// function createDate(month) {
-//   return new Date(0, month - 1);
-// }
 
 fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json')
   .then(response => response.json())
@@ -19,18 +10,23 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
     const height = 396;
     const colorScheme = ['#a50026', '#d73027', '#f46d43', '#fdae61', '#fee090', '#ffffbf', '#e0f3f8', '#abd9e9', '#74add1', '#4575b4', '#313695', '#000000']
 
-    const xScale = d3.scaleLinear()
-      .domain([d3.min(dataset.monthlyVariance, d => d.year), d3.max(dataset.monthlyVariance, d => d.year)])
+    const xScale = d3.scaleBand()
+      .domain(dataset.monthlyVariance.map(d => d.year))
       .range([0, width])
 
+    console.log(xScale.domain())
+
     const yScale = d3.scaleBand()
-      .domain([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+      .domain(d3.range(12))
       .range([0, height])
 
-    const xAxis = d3.axisBottom(xScale).tickFormat(d3.format('d'))
-    const yAxis = d3.axisLeft(yScale).tickFormat(month => {
-      return d3.timeFormat('%B')(new Date(0, month));
-    })
+    const xAxis = d3.axisBottom(xScale)
+      .tickValues(xScale.domain().filter(year => year % 10 === 0))
+      .tickSize(10)
+
+    const yAxis = d3.axisLeft(yScale)
+      .tickFormat(month => d3.timeFormat('%B')(new Date(0, month)))
+      .tickSize(10)
 
     // Title
     d3.select('main')
@@ -71,7 +67,6 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       .append('svg')
       .style('width', width + paddingLeft + paddingRight)
       .style('height', height + paddingTop + paddingBottom)
-    // .style('background-color', 'lightblue')
 
     // x-axis
     svg.append('g')
@@ -80,7 +75,7 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       .call(xAxis)
       .append('text')
       .text('Years')
-      .attr('transform', `translate(${width / 2}, ${paddingBottom - 85})`)
+      .attr('transform', `translate(${width / 2}, ${paddingBottom - 80})`)
       .style('fill', 'black')
       .style('text-anchor', 'middle')
 
@@ -106,9 +101,6 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
     const legendThreshold = d3.scaleThreshold()
       .domain(d3.range(minTemp, maxTemp + step, step))
       .range(colorScheme.reverse());
-
-    console.log(legendThreshold.domain().length)
-    console.log(legendThreshold.range().length)
 
     const legendXScale = d3.scaleLinear()
       .domain([minTemp - step, maxTemp + step])
@@ -141,11 +133,8 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       .append('rect')
       .attr('x', d => legendXScale(d[0]))
       .attr('y', 0)
-      // .attr('width', d => {
-      //   return d[0] && d[1] ? legendXScale(d[1]) - legendXScale(d[0]) : legendXScale(null)
-      // })
-      .attr('width', d => legendXScale(d[1]) - legendXScale(d[0]))
-      .attr('height', legendHeight)
+      .style('width', d => legendXScale(d[1]) - legendXScale(d[0]))
+      .style('height', legendHeight)
       .style('fill', d => legendThreshold(d[0]))
       .style('stroke', 'black')
       .style('stroke-width', 1)
@@ -154,6 +143,41 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       .attr('transform', `translate(0, ${legendHeight})`)
       .call(legendXAxis)
 
-    // Cell
+    // Cells
+    svg.selectAll('.cell')
+      .data(dataset.monthlyVariance)
+      .enter()
+      .append('rect')
+      .attr('class', 'cell')
+      .attr('data-month', d => d.month - 1)
+      .attr('data-year', d => d.year)
+      .attr('data-temp', d => Math.round((dataset.baseTemperature + d.variance) * 10) / 10)
+      .attr('x', d => xScale(d.year) + paddingLeft)
+      .attr('y', d => yScale(d.month - 1) + paddingTop)
+      .style('width', d => xScale.bandwidth())
+      .style('height', d => yScale.bandwidth(d.month - 1))
+      .style('fill', d => legendThreshold(dataset.baseTemperature + d.variance))
+      .style('stroke', 'black')
+      .style('stroke-width', 0)
+      .on('mouseover', (e, d) => {
+        tooltip.style('visibility', 'visible')
+          .style('left', `${e.pageX - tooltip.node().offsetWidth / 2}px`)
+          .style('top', `${yScale(d.month - 1) + paddingTop}px`)
+
+        tooltip.html(
+          `${d.year} - ${d3.timeFormat('%B')(new Date(0, d.month - 1))}
+          <br>${Math.round((dataset.baseTemperature + d.variance) * 10) / 10}&#8451;
+          <br>${d.variance > 0 ? '+' : ''}${Math.round(d.variance * 10) / 10}&#8451;`
+        ).attr('data-year', d.year)
+
+        d3.select(e.target)
+          .style('stroke-width', 2)
+      })
+      .on('mouseout', e => {
+        tooltip.style('visibility', 'hidden')
+
+        d3.select(e.target)
+          .style('stroke-width', 0)
+      })
   })
   .catch(error => console.error(error));
