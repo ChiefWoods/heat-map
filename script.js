@@ -1,20 +1,29 @@
-const paddingLeft = 144;
-const paddingRight = 30;
-const paddingTop = 40;
-const paddingBottom = 128;
-
-fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json')
-  .then(response => response.json())
+d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json')
   .then(dataset => {
-    const width = 5 * Math.ceil(dataset.monthlyVariance.length / 12);
+    const paddingLeft = 144;
+    const paddingRight = 30;
+    const paddingTop = 40;
+    const paddingBottom = 128;
+    const width = 1315;
     const height = 396;
-    const colorScheme = ['#a50026', '#d73027', '#f46d43', '#fdae61', '#fee090', '#ffffbf', '#e0f3f8', '#abd9e9', '#74add1', '#4575b4', '#313695', '#000000']
+    const colorScheme = [
+      '#a50026',
+      '#d73027',
+      '#f46d43',
+      '#fdae61',
+      '#fee090',
+      '#ffffbf',
+      '#e0f3f8',
+      '#abd9e9',
+      '#74add1',
+      '#4575b4',
+      '#313695',
+      '#000000'
+    ]
 
     const xScale = d3.scaleBand()
       .domain(dataset.monthlyVariance.map(d => d.year))
       .range([0, width])
-
-    console.log(xScale.domain())
 
     const yScale = d3.scaleBand()
       .domain(d3.range(12))
@@ -179,5 +188,4 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
         d3.select(e.target)
           .style('stroke-width', 0)
       })
-  })
-  .catch(error => console.error(error));
+  }).catch(error => console.error(error));
