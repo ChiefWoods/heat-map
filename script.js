@@ -1,7 +1,7 @@
 d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json')
   .then(dataset => {
     const paddingLeft = 144;
-    const paddingRight = 30;
+    const paddingRight = 80;
     const paddingTop = 40;
     const paddingBottom = 128;
     const width = 1315;
@@ -70,12 +70,17 @@ d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/mas
       .style('color', 'white')
       .style('font-size', '1.6rem')
       .style('font-family', "'Open Sans', sans-serif")
+      .style('white-space', 'nowrap')
 
     // Main SVG
-    const svg = d3.select('main')
-      .append('svg')
+    const container = d3.select('main')
+      .append('div')
+      .style('overflow-x', 'auto')
+      .style('width', '100%')
+
+    const svg = container.append('svg')
       .style('width', width + paddingLeft + paddingRight)
-      .style('height', height + paddingTop + paddingBottom)
+      .style('height', height + paddingTop + paddingBottom + 20)
 
     // x-axis
     svg.append('g')
