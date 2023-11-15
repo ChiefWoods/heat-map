@@ -6,20 +6,7 @@ d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/mas
     const paddingBottom = 128;
     const width = 1315;
     const height = 396;
-    const colorScheme = [
-      '#a50026',
-      '#d73027',
-      '#f46d43',
-      '#fdae61',
-      '#fee090',
-      '#ffffbf',
-      '#e0f3f8',
-      '#abd9e9',
-      '#74add1',
-      '#4575b4',
-      '#313695',
-      '#000000'
-    ]
+    const colorScheme = d3.schemeRdYlBu[11].concat('#000000')
 
     const xScale = d3.scaleBand()
       .domain(dataset.monthlyVariance.map(d => d.year))
@@ -55,22 +42,6 @@ d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/mas
       .style('font-size', '1.85rem')
       .style('font-family', "'Open Sans', sans-serif")
       .style('font-weight', 700)
-
-    // Tooltip
-    const tooltip = d3.select('main')
-      .append('div')
-      .attr('id', 'tooltip')
-      .style('visibility', 'hidden')
-      .style('position', 'absolute')
-      .style('opacity', 0.8)
-      .style('background-color', 'black')
-      .style('padding', '8px')
-      .style('border-radius', '6px')
-      .style('text-align', 'center')
-      .style('color', 'white')
-      .style('font-size', '1.6rem')
-      .style('font-family', "'Open Sans', sans-serif")
-      .style('white-space', 'nowrap')
 
     // Main SVG
     const container = d3.select('main')
@@ -156,6 +127,22 @@ d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/mas
     legend.append('g')
       .attr('transform', `translate(0, ${legendHeight})`)
       .call(legendXAxis)
+
+    // Tooltip
+    const tooltip = d3.select('main')
+      .append('div')
+      .attr('id', 'tooltip')
+      .style('visibility', 'hidden')
+      .style('position', 'absolute')
+      .style('opacity', 0.8)
+      .style('background-color', 'black')
+      .style('padding', '8px')
+      .style('border-radius', '6px')
+      .style('text-align', 'center')
+      .style('color', 'white')
+      .style('font-size', '1.6rem')
+      .style('font-family', "'Open Sans', sans-serif")
+      .style('white-space', 'nowrap')
 
     // Cells
     svg.selectAll('.cell')
