@@ -26,7 +26,7 @@ d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/mas
 
     // Title
     d3.select('main')
-      .append('text')
+      .append('h1')
       .text('Monthly Global Land-Surface Temperature')
       .attr('id', 'title')
       .style('font-size', '2.4rem')
@@ -36,7 +36,7 @@ d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/mas
 
     // Description
     d3.select('main')
-      .append('text')
+      .append('p')
       .html(`1753 - 2015: base temperature ${dataset.baseTemperature}&#8451;`)
       .attr('id', 'description')
       .style('font-size', '1.85rem')
@@ -144,7 +144,7 @@ d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/mas
       .style('font-family', "'Open Sans', sans-serif")
       .style('white-space', 'nowrap')
 
-    // Cells
+    // Cell
     svg.selectAll('.cell')
       .data(dataset.monthlyVariance)
       .enter()
@@ -166,9 +166,9 @@ d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/mas
           .style('top', `${yScale(d.month - 1) + paddingTop}px`)
 
         tooltip.html(
-          `${d.year} - ${d3.timeFormat('%B')(new Date(0, d.month - 1))}
-          <br>${Math.round((dataset.baseTemperature + d.variance) * 10) / 10}&#8451;
-          <br>${d.variance > 0 ? '+' : ''}${Math.round(d.variance * 10) / 10}&#8451;`
+          `${d.year} - ${d3.timeFormat('%B')(new Date(0, d.month - 1))}<br>
+          ${Math.round((dataset.baseTemperature + d.variance) * 10) / 10}&#8451;<br>
+          ${d.variance > 0 ? '+' : ''}${Math.round(d.variance * 10) / 10}&#8451;`
         ).attr('data-year', d.year)
 
         d3.select(e.target)
